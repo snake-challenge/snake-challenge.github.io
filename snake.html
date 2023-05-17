@@ -1,0 +1,591 @@
+<!DOCTYPE html> 
+<html lang='en-US' xml:lang='en-US'> 
+<head> <title></title> 
+<meta charset='utf-8' /> 
+<meta content='TeX4ht (https://tug.org/tex4ht/)' name='generator' /> 
+<meta content='width=device-width,initial-scale=1' name='viewport' /> 
+<link href='main.css' rel='stylesheet' type='text/css' /> 
+<meta content='main.tex' name='src' /> 
+</head><body>
+<!-- l. 71 --><p class='noindent'>
+                                                                                         
+                                                                                         
+</p><!-- l. 71 --><p class='indent'>
+                                                                                         
+                                                                                         
+</p>
+<div class='center'>
+<!-- l. 71 --><p class='noindent'>
+</p><!-- l. 71 --><p class='noindent'><span class='ecrm-1728'>The </span><span class='eccc1728-'><span class='small-caps'>Snake</span> </span><span class='ecrm-1728'>challenge: Sanitization algorithms under attack</span>
+</p>
+<div class='tabular'> <table class='tabular' id='TBL-1'><colgroup id='TBL-1-1g'><col id='TBL-1-1' /></colgroup><tr id='TBL-1-1-'><td class='td11' id='TBL-1-1-1' style='white-space:nowrap; text-align:center;'> <span class='ecrm-1200'>Tristan Allard</span><sup class='textsuperscript'><span class='ecrm-0900'>1</span></sup><span class='ecrm-1200'>, Louis Béziaud</span><sup class='textsuperscript'><span class='ecrm-0900'>1,2</span></sup> <span class='ecrm-1200'>and Sébastien Gambs</span><sup class='textsuperscript'><span class='ecrm-0900'>2</span></sup>  </td>
+</tr><tr class='vspace' style='font-size:9.99756pt'><td> </td></tr><tr id='TBL-1-2-'><td class='td11' id='TBL-1-2-1' style='white-space:nowrap; text-align:center;'>                <sup class='textsuperscript'><span class='ecrm-0900'>1</span></sup><span class='ecti-0900'>Univ Rennes, CNRS, IRISA                              </span></td>
+</tr><tr id='TBL-1-3-'><td class='td11' id='TBL-1-3-1' style='white-space:nowrap; text-align:center;'>             <sup class='textsuperscript'><span class='ecrm-0900'>2</span></sup><span class='ecti-0900'>Université </span><span class='ecti-0900'>du Québéc à </span><span class='ecti-0900'>Montréal                        </span></td>
+</tr><tr id='TBL-1-4-'><td class='td11' id='TBL-1-4-1' style='white-space:nowrap; text-align:center;'> <sup class='textsuperscript'></sup><span class='ecit-0900'>{tristan.allard,louis.beziaud}@irisa.fr, gambs.sebastien@uqam.ca </span></td>
+</tr><tr id='TBL-1-5-'><td class='td11' id='TBL-1-5-1' style='white-space:nowrap; text-align:center;'>               <sup class='textsuperscript'></sup><span class='ecti-0700'>Authors appear in alphabetical order                               </span></td></tr></table>                          </div>
+<!-- l. 71 --><p class='noindent'><span class='ecrm-1200'>May 17, 2023</span></p></div>
+   <section class='abstract' role='doc-abstract'> 
+<h3 class='abstracttitle'>
+<span class='ecbx-0900'>Abstract</span>
+</h3>
+     <!-- l. 74 --><p class='noindent'><span class='ecrm-0900'>Competitions and challenges have proven to be useful tools in the fields of security, cryptography or
+     </span><span class='ecrm-0900'>machine learning for stimulating research as well as generating and testing open-source implementations
+     </span><span class='ecrm-0900'>of state-of-the-art methods. While there were already some privacy challenges organized in the domain
+     </span><span class='ecrm-0900'>of data sanitization (also called data anonymization or privacy-preserving data publishing), they have
+     </span><span class='ecrm-0900'>mainly focused on the protection aspect. In this paper, we propose the </span><span class='eccc0900-'><span class='small-caps'>Snake</span> </span><span class='ecrm-0900'>challenges, a series of
+     </span><span class='ecrm-0900'>contests dedicated to the design of privacy attacks against data sanitization schemes. The conception
+     </span><span class='ecrm-0900'>of the </span><span class='eccc0900-'><span class='small-caps'>Snake</span> </span><span class='ecrm-0900'>challenges is such that they allow participants to concentrate their attacking efforts over
+     </span><span class='ecrm-0900'>a small set of well-chosen sanitization schemes. In addition, the proposed structure for the challenge is
+     </span><span class='ecrm-0900'>generic in the sense that the details of the contest can easily be instantiated at each edition (</span><span class='ecti-0900'>e.g.</span><span class='ecrm-0900'>, type
+     </span><span class='ecrm-0900'>of attack, dataset used and background knowledge of the adversary). In this first edition, we propose
+     </span><span class='ecrm-0900'>to focus on membership inference attacks over a set of well-known differentially-private synthetic data
+     </span><span class='ecrm-0900'>generation schemes. More precisely, the design of the first edition includes an instantiation of the generic
+     </span><span class='ecrm-0900'>structure, a dataset derived from the Census data, an evaluation of the success of each attack algorithm
+     </span><span class='ecrm-0900'>against varying targets and background knowledge, and the technical environment for supporting the
+     </span><span class='ecrm-0900'>contest. This paper describes our proposal and positions it with respect to previous privacy challenges.</span>
+</p>
+</section>
+   <h3 class='sectionHead'><span class='titlemark'>1   </span> <a id='x1-10001'></a>Introduction</h3>
+<!-- l. 3 --><p class='noindent'>Competitions and challenges are commonly used both in the machine learning community – for boosting the design
+and development of practical and efficient solutions to hard or new problems – and in the security community – for
+training purposes or for the evaluation of existing infrastructures. In contrast, in the privacy community, there is not
+a long tradition of holding such challenges. However, in recent years several competitions focusing on data
+                                                                                         
+                                                                                         
+sanitization algorithms (also called <span class='ecti-1000'>data anonymization algorithms </span>or <span class='ecti-1000'>privacy-preserving data publishing algorithms</span>)
+have been launched [<a id='x1-1001'></a> <a href='#cite.0@boutet:hal-02512677'>2</a>, <a id='x1-1002'></a> <a href='#cite.0@haspc2021'>8</a>, <a id='x1-1003'></a> <a href='#cite.0@pwscup2021'>11</a>, <a id='x1-1004'></a> <a href='#cite.0@ridgeway2021'>13</a>].
+</p><!-- l. 7 --><p class='indent'>   Some of them, like the <span class='ecti-1000'>2018 Differential Privacy NIST Challenge</span> [<a href='#cite.0@ridgeway2021'>13</a>], have focused primarily on the defense aspect.
+More precisely, their main requirements were that the proposed algorithms have to (1) meet formal guarantees such as
+differential privacy, (2) achieve high utility levels on real-life cases, and (3) are efficient enough for being run on today’s
+off-the-shelf computer systems. Others, like the <span class='ecti-1000'>Hide-and-Seek challenge</span> [<a href='#cite.0@haspc2021'>8</a>], the INSAnonym competition [<a href='#cite.0@boutet:hal-02512677'>2</a>] or the
+<a href='https://www.iwsec.org/pws/2021/cup21_e.html'>PWSCUP</a><span class='footnote-mark'><a href='main2.html#fn1x0'><sup class='textsuperscript'>1</sup></a></span><a id='x1-1005f1'></a>  [<a href='#cite.0@pwscup2021'>11</a>]
+additionally consider attacks on the sanitized datasets generated by the participants. More precisely, these
+competitions were generally composed of two phases, in which the first one is dedicated to the design of
+sanitization algorithms (usually focus on a particular type of data and use case) while the second
+one usually consists in attacking the data sanitized with the algorithms developed during the first
+phase.
+</p><!-- l. 12 --><p class='indent'>   While the sanitization phases of past challenges have been successful, in the sense that it has provided insights
+on the privacy/utility trade-offs, lead to implementations from state-of-the-art sanitization algorithms or even novel
+algorithms, the outcomes of the attack phases were usually more mitigated. For example, the organizers of the
+Hide-and-Seek challenge have reported attack results equivalent to random guesses [<a id='x1-1006'></a> <a href='#cite.0@haspc2021'>8</a>]. We believe that one of the
+main reason for this is that in order to be successful, the attack phase must allow participants (1) to dedicate
+sufficient time to the design, implementation and testing of their attack strategies and (2) to focus on a few
+algorithms.
+</p><!-- l. 16 --><p class='indent'>   In this paper, we propose a series of privacy challenges called <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>specifically tailored to attacks against
+sanitization algorithms. More precisely, the general structure of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenge provides the following salient
+features: it (1) concentrates the energy and expertise of participants against a small set of carefully chosen
+state-of-the-art sanitization algorithms, (2) gives sufficient time to participants to design and test carefully their
+attacks, (3) enables the exploration of a wide range of possible adversary models and background knowledge and (4)
+complements nicely the current sanitization competitions that focus on the sanitization part, thus resulting in a
+complete defense-attack pipeline. The first edition of the challenge focuses on the <span class='ecti-1000'>Membership Inference Attack</span>
+setting [<a id='x1-1007'></a> <a href='#cite.0@Hu2021MembershipIA'>5</a>, <a id='x1-1008'></a> <a href='#cite.0@Stadler2020SyntheticD'>14</a>] over tabular data synthetically generated while satisfying differential privacy [<a id='x1-1009'></a> <a href='#cite.0@Dwork2014TheAF'>3</a>]. The adversarial
+background knowledge consists in the record(s) of the target(s) of the attack. Further editions will
+showcase other inference attacks, adversarial background knowledge, privacy models and sanitization
+algorithms.
+</p><!-- l. 23 --><p class='indent'>   The outline of this report is as follows. First in Section <a href='#x1-20002'>2<!-- tex4ht:ref: sec:general  --></a> , we describe the generic structure of the <span class='eccc1000-'><span class='small-caps'>Snake</span></span>
+challenges. Then in Section <a href='#x1-30003'>3<!-- tex4ht:ref: sec:firsted  --></a> , we instantiate it by providing the details of the first edition. Afterwards, we position
+the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges in Section <a href='#x1-200004'>4<!-- tex4ht:ref: sec:related  --></a>  with respect to previous sanitization competitions before concluding in
+Section <a href='#x1-210005'>5<!-- tex4ht:ref: sec:conclusion  --></a> .
+</p>
+   <h3 class='sectionHead'><span class='titlemark'>2   </span> <a id='x1-20002'></a>General structure of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges</h3>
+   <div class='table'>
+                                                                                         
+                                                                                         
+<!-- l. 5 --><p class='indent'>   <a id='x1-20011'></a></p><figure class='float'>
+                                                                                         
+                                                                                         
+<figcaption class='caption'><span class='id'>Table 1: </span><span class='content'>The parameters of the framework that must be instantiated in order to design an edition of the
+<span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges.</span></figcaption><!-- tex4ht:label?: x1-20011  -->
+                       <dl class='description'><dt class='description'>
+                       <!-- l. 8 --><p class='noindent'>
+     <span class='ecbx-1000'>Number of tracks</span> </p></dt><dd class='description'>
+                       <!-- l. 8 --><p class='noindent'> The number of independent tracks of the edition being designed.
+                       </p></dd><dt class='description'>
+                       <!-- l. 10 --><p class='noindent'>
+                <span class='ecbx-1000'>Track</span> </p></dt><dd class='description'>
+                       <!-- l. 10 --><p class='noindent'> A track is defined by a time period, a set of sanitization algorithms, a base
+                       dataset and a set of teams.
+                       </p></dd><dt class='description'>
+                       <!-- l. 12 --><p class='noindent'>
+                <span class='ecbx-1000'>Team</span> </p></dt><dd class='description'>
+                       <!-- l. 12 --><p class='noindent'> A set of individuals collaborating together under the same name and registered
+                       to one or more tracks.
+                       </p></dd><dt class='description'>
+                       <!-- l. 14 --><p class='noindent'>
+          <span class='ecbx-1000'>Time period</span> </p></dt><dd class='description'>
+                       <!-- l. 14 --><p class='noindent'> For each track, the time period over which the track runs.
+                       </p></dd><dt class='description'>
+                       <!-- l. 16 --><p class='noindent'>
+          <span class='ecbx-1000'>Base dataset</span> </p></dt><dd class='description'>
+                       <!-- l. 16 --><p class='noindent'> For each track, the full dataset input by the sanitization algorithms (partially
+                       or totally).
+                       </p></dd><dt class='description'>
+                       <!-- l. 18 --><p class='noindent'>
+<span class='ecbx-1000'>Sanitization algorithms</span> </p></dt><dd class='description'>
+                       <!-- l. 18 --><p class='noindent'> For each track, the set of sanitization algorithms attacked.
+                       </p></dd><dt class='description'>
+                       <!-- l. 20 --><p class='noindent'>
+           <span class='ecbx-1000'>Attack goal</span> </p></dt><dd class='description'>
+                       <!-- l. 20 --><p class='noindent'> The objective of the attack (<span class='ecti-1000'>e.g.</span>, membership inference, reconstruction attack
+                       or attribute inference).
+                       </p></dd><dt class='description'>
+                       <!-- l. 22 --><p class='noindent'>
+      <span class='ecbx-1000'>Success measure</span> </p></dt><dd class='description'>
+                       <!-- l. 22 --><p class='noindent'> For each track, the measure used for computing the score of each team.</p></dd></dl>
+                                                                                         
+                                                                                         
+   </figure>
+   </div>
+<!-- l. 26 --><p class='indent'>   Basically, an edition of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>series of challenges consists in a set of independent <span class='ecti-1000'>tracks</span>. Each of
+these tracks focuses on a set of <span class='ecti-1000'>sanitization algorithms under attack</span>. Each of this track also relies
+on a <span class='ecti-1000'>base dataset </span>from which private datasets are extracted. In addition, a set of <span class='ecti-1000'>competing teams</span>
+registers to a track and afterwards are ranked based on a <span class='ecti-1000'>success measure </span>on the subset of algorithms
+they attack. The success measure typically reflects the strength of the attack. The <span class='ecti-1000'>time period </span>for
+conducting a track must be long enough for letting each team explore, design and implement at least one
+attack.
+</p><!-- l. 33 --><p class='indent'>   The instantiation of the above framework (<span class='ecti-1000'>e.g.</span>, number of tracks, details of the success measure, algorithms
+under attack–see Table <a href='#x1-20011'>1<!-- tex4ht:ref: tab:params  --></a> ) might vary along tracks and editions, allowing to implement it over a diversity of
+settings. For a concrete illustration, we detail afterwards the design of the first edition in Section <a href='#x1-30003'>3<!-- tex4ht:ref: sec:firsted  --></a>
+.
+</p>
+   <h3 class='sectionHead'><span class='titlemark'>3   </span> <a id='x1-30003'></a>The <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenge – 1<sup class='textsuperscript'><span class='ecrm-0900'>st</span></sup> edition</h3>
+<!-- l. 4 --><p class='noindent'>
+</p>
+   <h4 class='subsectionHead'><span class='titlemark'>3.1   </span> <a id='x1-40003.1'></a>General organization</h4>
+<!-- l. 6 --><p class='noindent'>Table <a href='#x1-40012'>2<!-- tex4ht:ref: tab:params-first  --></a>  summarizes the parameters of <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> while Figure <a href='#x1-40111'>1<!-- tex4ht:ref: fig:flow  --></a>  gives an overview of the complete
+workflow.
+</p>
+   <div class='table'>
+                                                                                         
+                                                                                         
+<!-- l. 9 --><p class='indent'>   <a id='x1-40012'></a></p><figure class='float'>
+                                                                                         
+                                                                                         
+<figcaption class='caption'><span class='id'>Table 2: </span><span class='content'>Parameters of the first edition of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges.</span></figcaption><!-- tex4ht:label?: x1-40012  -->
+                       <dl class='description'><dt class='description'>
+                       <!-- l. 12 --><p class='noindent'>
+               <span class='ecbx-1000'>Tracks</span> </p></dt><dd class='description'>
+                       <!-- l. 12 --><p class='noindent'>
+                         </p><dl class='enumerate-enumitem'><dt class='enumerate-enumitem'>
+                       1. </dt><dd class='enumerate-enumitem'>Asynchronous
+                         </dd><dt class='enumerate-enumitem'>
+                       2. </dt><dd class='enumerate-enumitem'>Synchronous</dd></dl>
+                       </dd><dt class='description'>
+                       <!-- l. 18 --><p class='noindent'>
+                <span class='ecbx-1000'>Team</span> </p></dt><dd class='description'>
+                       <!-- l. 18 --><p class='noindent'> To be defined at runtime.
+                       </p></dd><dt class='description'>
+                       <!-- l. 20 --><p class='noindent'>
+          <span class='ecbx-1000'>Time period</span> </p></dt><dd class='description'>
+                       <!-- l. 20 --><p class='noindent'>
+                               </p><dl class='enumerate-enumitem'><dt class='enumerate-enumitem'>
+                       Track 1: </dt><dd class='enumerate-enumitem'>from the 18th of May 2023 to the 14th of June 2023 (4 weeks).
+                               </dd><dt class='enumerate-enumitem'>
+                       Track 2: </dt><dd class='enumerate-enumitem'>from the 12th of June 2023 to the 14th of June 2023 (3 days).</dd></dl>
+                       </dd><dt class='description'>
+                       <!-- l. 27 --><p class='noindent'>
+          <span class='ecbx-1000'>Base dataset</span> </p></dt><dd class='description'>
+                       <!-- l. 27 --><p class='noindent'> The CPS (Current Population Survey) data projected over a subset of dimensions
+                       (tabular data). Each execution of a sanitization algorithm takes as input a private
+                       dataset consisting of random samples from the base dataset.
+                       </p></dd><dt class='description'>
+                       <!-- l. 30 --><p class='noindent'>
+               <span class='ecbx-1000'>Targets</span> </p></dt><dd class='description'>
+                       <!-- l. 30 --><p class='noindent'> Each target consists in the set of records of a random household containing at least 5
+                       individuals<span class='footnote-mark'><a href='main3.html#fn2x0'><sup class='textsuperscript'>2</sup></a></span><a id='x1-4006f2'></a> .
+                       </p></dd><dt class='description'>
+                       <!-- l. 32 --><p class='noindent'>
+<span class='ecbx-1000'>Sanitization algorithms</span> </p></dt><dd class='description'>
+                       <!-- l. 32 --><p class='noindent'> <span class='ectt-1000'>PrivBayes</span> [<a id='x1-4007'></a> <a href='#cite.0@privbayes'>16</a>], <span class='ectt-1000'>MST</span> [<a id='x1-4008'></a> <a href='#cite.0@mckenna_winning_2021'>9</a>], <span class='ectt-1000'>PATE-GAN</span> [<a id='x1-4009'></a> <a href='#cite.0@Jordon2019PATEGANGS'>7</a>].
+                       </p></dd><dt class='description'>
+                       <!-- l. 34 --><p class='noindent'>
+           <span class='ecbx-1000'>Attack goal</span> </p></dt><dd class='description'>
+                       <!-- l. 34 --><p class='noindent'> Membership inference.
+                                                                                         
+                                                                                         
+                       </p></dd><dt class='description'>
+                       <!-- l. 36 --><p class='noindent'>
+      <span class='ecbx-1000'>Success measure</span> </p></dt><dd class='description'>
+                       <!-- l. 36 --><p class='noindent'> For each team, number of combinations of competition parameters (sanitization
+                       algorithm, privacy parameter) on which the given team obtains the best membership
+                       advantage [<a id='x1-4010'></a> <a href='#cite.0@yeom2018'>15</a>].</p></dd></dl>
+                                                                                         
+                                                                                         
+   </figure>
+   </div>
+   <figure class='figure'> 
+
+                                                                                         
+                                                                                         
+<a id='x1-40111'></a>
+                                                                                         
+                                                                                         
+<!-- l. 42 --><p class='noindent'><img alt='PIC' src='flow.png' style='width:40%' />
+</p>
+<figcaption class='caption'><span class='id'>Figure 1: </span><span class='content'>Overview of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> workflow for a single parameterized algorithm</span></figcaption><!-- tex4ht:label?: x1-40111  -->
+.
+                                                                                         
+                                                                                         
+   </figure>
+<!-- l. 47 --><p class='noindent'><span class='paragraphHead'><a id='x1-5000'></a><span class='ecbx-1000'>Structure.</span></span>
+   The first edition of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenge, called <span class='eccc1000-'><span class='small-caps'>Snake</span></span><sub><span class='cmr-7'>1</span></sub> below, is organized jointly with
+<a href='https://apvp23.sciencesconf.org/'>APVP’23</a><span class='footnote-mark'><a href='main4.html#fn3x0'><sup class='textsuperscript'>3</sup></a></span><a id='x1-5001f3'></a> .
+It will feature two tracks. More precisely, Track 1 will be <span class='ecti-1000'>asynchronous </span>and take place offline during four weeks
+before APVP’23 while Track 2 will be <span class='ecti-1000'>synchronous </span>and take place during the 3 days of APVP’23. The participating
+teams are expected to leverage during Track 2 the work performed during Track 1. Remote participation to Track 2
+will also be possible.
+</p>
+<!-- l. 53 --><p class='noindent'><span class='paragraphHead'><a id='x1-6000'></a><span class='ecbx-1000'>Expected outcomes.</span></span>
+   To favor both the reproducibility and the accountability of the results of <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub>, (1) the description of the attacks
+designed along <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> and their code will be published online under an open-source license (<span class='ecti-1000'>i.e.</span>, approved by the <a href='https://opensource.org/'>Open
+Source Initiative</a><span class='footnote-mark'><a href='main5.html#fn4x0'><sup class='textsuperscript'>4</sup></a></span><a id='x1-6001f4'></a> ),
+and (2) complete information about <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> settings (<span class='ecti-1000'>i.e.</span>, teams and scores) will also be made public. The
+choice of the exact open source license of each attack source code is left to the team having written the
+code.
+</p>
+   <h4 class='subsectionHead'><span class='titlemark'>3.2   </span> <a id='x1-70003.2'></a>Track 1 (Asynchronous): Description of the participants’ tasks</h4>
+<!-- l. 59 --><p class='noindent'><span class='paragraphHead'><a id='x1-8000'></a><span class='ecbx-1000'>Attack algorithm.</span></span>
+   <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> focuses on <span class='ecti-1000'>membership inference attacks </span>on differentially-private synthetic data generation algorithms.
+More precisely, each team has to design an attack algorithm as follows.
+     </p><dl class='description'><dt class='description'>
+     <!-- l. 63 --><p class='noindent'>
+<span class='ecbx-1000'>Input</span> </p></dt><dd class='description'>
+     <!-- l. 63 --><p class='noindent'> We provide to the attack algorithms the following information: </p>
+         <ul class='itemize1'>
+         <li class='itemize'>The synthetic dataset generated by an execution of the targeted sanitization algorithm over a
+         private dataset.
+         </li>
+         <li class='itemize'>The base dataset from which the private dataset is sampled.
+         </li>
+         <li class='itemize'>The parameters of the execution of the sanitization algorithm attacked.</li></ul>
+                                                                                         
+                                                                                         
+     </dd><dt class='description'>
+     <!-- l. 70 --><p class='noindent'>
+<span class='ecbx-1000'>Output</span> </p></dt><dd class='description'>
+     <!-- l. 70 --><p class='noindent'> The output of the attack algorithm is a single real <span class='cmsy-10'>∈ </span><span class='cmr-10'>[0</span><span class='cmmi-10'>,</span><span class='cmr-10'>1] </span>indicating the predicted probability of each target
+     being within the private dataset or not.</p></dd></dl>
+<!-- l. 73 --><p class='indent'>   We detail below the computation of the private datasets and of the targets, the sanitization algorithms under
+attack and the success metric of attacks.
+</p>
+<!-- l. 75 --><p class='noindent'><span class='paragraphHead'><a id='x1-9000'></a><span class='ecbx-1000'>Base dataset and private datasets.</span></span>
+   <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> makes use of the publicly available <span class='ecti-1000'>EPI CPS Basic Monthly </span>data provided by the Economic Policy
+Institute [<a id='x1-9001'></a> <a href='#cite.0@epi_microdata'>6</a>]. The CPS dataset is divided in years in which a yearly dataset contains more than <span class='cmr-10'>10</span><sup><span class='cmr-7'>6</span></sup> records and 125
+columns<span class='footnote-mark'><a href='main6.html#fn5x0'><sup class='textsuperscript'>5</sup></a></span><a id='x1-9002f5'></a> . A
+record contains information about a single individual in a household. However, several individuals from the same
+household can be pooled and in addition any household can join the CPS at any given month and is interviewed (1)
+during <span class='cmr-10'>4 </span>consecutive months for the given year, and (2) the same <span class='cmr-10'>4 </span>consecutive months during the following
+year.
+</p><!-- l. 82 --><p class='indent'>   Our base dataset is built as follows. We concatenate the years 2005 to
+2022<span class='footnote-mark'><a href='main8.html#fn7x0'><sup class='textsuperscript'>7</sup></a></span><a id='x1-9004f7'></a> . For each household,
+we keep only the month<span class='footnote-mark'><a href='main9.html#fn8x0'><sup class='textsuperscript'>8</sup></a></span><a id='x1-9005f8'></a> 
+in which it possesses the most records (<span class='ecti-1000'>i.e.</span>, individuals). We end up with each household being unique by year and
+month. Afterwards, we drop all rows that have at least one missing value. This results in a dataset that includes
+77111 households and 201279 rows (<span class='ecti-1000'>i.e.</span>, individuals). Finally, we project the dataset on 15 attributes (see Table <a href='#x1-90063'>3<!-- tex4ht:ref: tab:attributes  --></a> ),
+which results in what is called the base dataset.
+</p>
+   <div class='table'>
+                                                                                         
+                                                                                         
+<!-- l. 89 --><p class='indent'>   <a id='x1-90063'></a></p><figure class='float'>
+                                                                                         
+                                                                                         
+<figcaption class='caption'><span class='id'>Table 3: </span><span class='content'>Attributes’ description of the base dataset</span></figcaption><!-- tex4ht:label?: x1-90063  -->
+<div class='tabular'> <table class='tabular' id='TBL-2'><colgroup id='TBL-2-1g'><col id='TBL-2-1' /><col id='TBL-2-2' /><col id='TBL-2-3' /><col id='TBL-2-4' /><col id='TBL-2-5' /><col id='TBL-2-6' /><col id='TBL-2-7' /><col id='TBL-2-8' /><col id='TBL-2-9' /><col id='TBL-2-10' /><col id='TBL-2-11' /><col id='TBL-2-12' /><col id='TBL-2-13' /><col id='TBL-2-14' /><col id='TBL-2-15' /><col id='TBL-2-16' /></colgroup><tr id='TBL-2-1-'><td class='td11' id='TBL-2-1-1' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-1-2' style='white-space:nowrap; text-align:left;'> age      </td><td class='td11' id='TBL-2-1-3' style='white-space:nowrap; text-align:left;'> agechild   </td><td class='td11' id='TBL-2-1-4' style='white-space:nowrap; text-align:left;'> citistat   </td><td class='td11' id='TBL-2-1-5' style='white-space:nowrap; text-align:left;'> female   </td><td class='td11' id='TBL-2-1-6' style='white-space:nowrap; text-align:left;'> married   </td><td class='td11' id='TBL-2-1-7' style='white-space:nowrap; text-align:left;'> ownchild   </td><td class='td11' id='TBL-2-1-8' style='white-space:nowrap; text-align:left;'> wbhaom   </td><td class='td11' id='TBL-2-1-9' style='white-space:nowrap; text-align:left;'> gradeatn   </td><td class='td11' id='TBL-2-1-10' style='white-space:nowrap; text-align:left;'> cow1   </td><td class='td11' id='TBL-2-1-11' style='white-space:nowrap; text-align:left;'> ftptstat   </td><td class='td11' id='TBL-2-1-12' style='white-space:nowrap; text-align:left;'> statefips   </td><td class='td11' id='TBL-2-1-13' style='white-space:nowrap; text-align:left;'> hoursut   </td><td class='td11' id='TBL-2-1-14' style='white-space:nowrap; text-align:left;'> faminc   </td><td class='td11' id='TBL-2-1-15' style='white-space:nowrap; text-align:left;'> mind16   </td><td class='td11' id='TBL-2-1-16' style='white-space:nowrap; text-align:left;'> mocc10   </td>
+</tr><tr id='TBL-2-2-'><td class='td11' id='TBL-2-2-1' style='white-space:nowrap; text-align:left;'> Numerical  </td><td class='td11' id='TBL-2-2-2' style='white-space:nowrap; text-align:left;'> X         </td><td class='td11' id='TBL-2-2-3' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-2-4' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-2-5' style='white-space:nowrap; text-align:left;'>        </td><td class='td11' id='TBL-2-2-6' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-2-7' style='white-space:nowrap; text-align:left;'> X            </td><td class='td11' id='TBL-2-2-8' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-2-9' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-2-10' style='white-space:nowrap; text-align:left;'>       </td><td class='td11' id='TBL-2-2-11' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-2-12' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-2-13' style='white-space:nowrap; text-align:left;'> X           </td><td class='td11' id='TBL-2-2-14' style='white-space:nowrap; text-align:left;'>        </td><td class='td11' id='TBL-2-2-15' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-2-16' style='white-space:nowrap; text-align:left;'>         </td></tr><tr id='TBL-2-3-'><td class='td11' id='TBL-2-3-1' style='white-space:nowrap; text-align:left;'> Ordinal </td><td class='td11' id='TBL-2-3-2' style='white-space:nowrap; text-align:left;'> X </td><td class='td11' id='TBL-2-3-3' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-4' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-5' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-6' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-7' style='white-space:nowrap; text-align:left;'> X </td><td class='td11' id='TBL-2-3-8' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-9' style='white-space:nowrap; text-align:left;'> X </td><td class='td11' id='TBL-2-3-10' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-11' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-12' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-13' style='white-space:nowrap; text-align:left;'> X </td><td class='td11' id='TBL-2-3-14' style='white-space:nowrap; text-align:left;'> X </td><td class='td11' id='TBL-2-3-15' style='white-space:nowrap; text-align:left;'> </td><td class='td11' id='TBL-2-3-16' style='white-space:nowrap; text-align:left;'></td>
+</tr><tr id='TBL-2-4-'><td class='td11' id='TBL-2-4-1' style='white-space:nowrap; text-align:left;'> Unique      </td><td class='td11' id='TBL-2-4-2' style='white-space:nowrap; text-align:left;'> 65        </td><td class='td11' id='TBL-2-4-3' style='white-space:nowrap; text-align:left;'> 16          </td><td class='td11' id='TBL-2-4-4' style='white-space:nowrap; text-align:left;'> 5          </td><td class='td11' id='TBL-2-4-5' style='white-space:nowrap; text-align:left;'> 2          </td><td class='td11' id='TBL-2-4-6' style='white-space:nowrap; text-align:left;'> 2           </td><td class='td11' id='TBL-2-4-7' style='white-space:nowrap; text-align:left;'> 12           </td><td class='td11' id='TBL-2-4-8' style='white-space:nowrap; text-align:left;'> 6            </td><td class='td11' id='TBL-2-4-9' style='white-space:nowrap; text-align:left;'> 16           </td><td class='td11' id='TBL-2-4-10' style='white-space:nowrap; text-align:left;'> 8        </td><td class='td11' id='TBL-2-4-11' style='white-space:nowrap; text-align:left;'> 9           </td><td class='td11' id='TBL-2-4-12' style='white-space:nowrap; text-align:left;'> 51           </td><td class='td11' id='TBL-2-4-13' style='white-space:nowrap; text-align:left;'> 129        </td><td class='td11' id='TBL-2-4-14' style='white-space:nowrap; text-align:left;'> 15         </td><td class='td11' id='TBL-2-4-15' style='white-space:nowrap; text-align:left;'> 16         </td><td class='td11' id='TBL-2-4-16' style='white-space:nowrap; text-align:left;'> 10          </td>
+</tr><tr id='TBL-2-5-'><td class='td11' id='TBL-2-5-1' style='white-space:nowrap; text-align:left;'> Range       </td><td class='td11' id='TBL-2-5-2' style='white-space:nowrap; text-align:left;'> <span class='cmr-10'>[16</span><span class='cmmi-10'>,</span><span class='cmr-10'>80]  </span></td><td class='td11' id='TBL-2-5-3' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-5-4' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-5-5' style='white-space:nowrap; text-align:left;'>        </td><td class='td11' id='TBL-2-5-6' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-5-7' style='white-space:nowrap; text-align:left;'> <span class='cmr-10'>[0</span><span class='cmmi-10'>,</span><span class='cmr-10'>11]       </span></td><td class='td11' id='TBL-2-5-8' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-5-9' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-5-10' style='white-space:nowrap; text-align:left;'>       </td><td class='td11' id='TBL-2-5-11' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-5-12' style='white-space:nowrap; text-align:left;'>          </td><td class='td11' id='TBL-2-5-13' style='white-space:nowrap; text-align:left;'> <span class='cmr-10'>[0</span><span class='cmmi-10'>,</span><span class='cmr-10'>198]    </span></td><td class='td11' id='TBL-2-5-14' style='white-space:nowrap; text-align:left;'>        </td><td class='td11' id='TBL-2-5-15' style='white-space:nowrap; text-align:left;'>         </td><td class='td11' id='TBL-2-5-16' style='white-space:nowrap; text-align:left;'>         </td>
+</tr></table>                                                                                                                                                                      </div>
+                                                                                         
+                                                                                         
+   </figure>
+   </div>
+<!-- l. 115 --><p class='indent'>   From this base dataset, we generate one private dataset for each parameterized sanitization algorithm attacked.
+More precisely, each private dataset is obtained by combining a random subset of targets (<span class='ecti-1000'>i.e.</span>, the members) with
+<span class='cmr-10'>10</span><sup><span class='cmr-7'>4</span></sup> <span class='ecti-1000'>individuals </span>sampled uniformly at random from the base data.
+</p>
+<!-- l. 118 --><p class='noindent'><span class='paragraphHead'><a id='x1-10000'></a><span class='ecbx-1000'>Targets and background knowledge.</span></span>
+   In <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub>, any household that contains at least 5 individuals might be a target, with the target
+consisting of the full set of records of the household. The set of targets given to a team for launching its
+membership inference attack on a given sanitization algorithm are extracted from the corresponding private
+dataset.
+</p><!-- l. 122 --><p class='indent'>   <span class='eccc1000-'><span class='small-caps'>Snake</span> </span><sub class='textsubscript'><span class='ecrm-0900'>1</span></sub> considers the following background knowledge about each target. The
+adversary knows (1) the exact records of the household targeted, and (2) the full base
+dataset<span class='footnote-mark'><a href='main10.html#fn9x0'><sup class='textsuperscript'>9</sup></a></span><a id='x1-10001f9'></a> .
+Additionally, following Kerckhoffs’s principle, the adversary is also given the information about the sanitization
+algorithm targeted as well as the parameters used for the executions and has access to its implementation. However,
+the randomness generated internally during the execution of the algorithm is unknown to the adversary (<span class='ecti-1000'>e.g.</span>, for the
+generation of the Laplace noise).
+</p>
+<!-- l. 128 --><p class='noindent'><span class='paragraphHead'><a id='x1-11000'></a><span class='ecbx-1000'>Sanitization algorithms under attacks.</span></span>
+   The sanitization algorithms under attack during <span class='eccc1000-'><span class='small-caps'>Snake</span></span> <sub><span class='cmr-7'>1</span></sub> are differentially-private synthetic data generation
+algorithms. More precisely, we have selected a set of algorithms according to the following two criteria: technical soundness
+assessed by a rigorous peer-selection process (<span class='ecti-1000'>e.g.</span>, published at top-tier conferences or winner of a dedicated competition)
+and available open-source implementation. In particular, we have used the implementation available in the <a href='https://github.com/alan-turing-institute/reprosyn'>reprosyn
+package</a><span class='footnote-mark'><a href='main11.html#fn10x0'><sup class='textsuperscript'>10</sup></a></span><a id='x1-11001f10'></a> .
+Except for parameters related to differential privacy, we use the default values set in their implementations.
+     </p><dl class='description'><dt class='description'>
+     <!-- l. 136 --><p class='noindent'>
+<span class='ecbx-1000'>The </span><span class='ectt-1000'>PrivBayes </span><span class='ecbx-1000'>algorithm [</span><a id='x1-11002'></a> <a href='#cite.0@privbayes'><span class='ecbx-1000'>16</span></a><span class='ecbx-1000'>]</span> </p></dt><dd class='description'>
+     <!-- l. 136 --><p class='noindent'> generates  synthetic  data  by  capturing  the  underlying  distribution  of  the  private  data  through  a
+     specific Bayesian network while satisfying <span class='cmmi-10'>𝜖</span>-differential privacy. <span class='ectt-1000'>PrivBayes </span>is divided in two main steps,
+     with half of the privacy budget being used for each step. First, it greedily constructs a low-degree
+     Bayesian network by selecting the child/parents pairs maximizing the mutual information based on the
+     Exponential mechanism[<a id='x1-11003'></a> <a href='#cite.0@Dwork2014TheAF'>3</a>]. Second, it computes the conditional distributions of the resulting network,
+     perturbed by the Laplace mechanism. The synthetic data is finally generated by sampling iteratively
+     from the conditional distributions, which is a form of post-processing preserving the differential privacy
+     guarantees.
+     </p></dd><dt class='description'>
+     <!-- l. 148 --><p class='noindent'>
+<span class='ecbx-1000'>The </span><span class='ectt-1000'>MST </span><span class='ecbx-1000'>algorithm [</span><a id='x1-11004'></a> <a href='#cite.0@mckenna_winning_2021'><span class='ecbx-1000'>9</span></a><span class='ecbx-1000'>]</span> </p></dt><dd class='description'>
+     <!-- l. 148 --><p class='noindent'> is a generalization of the NIST-MST algorithm, which has won the 2018 <a href='https://www.nist.gov/ctl/pscr/open-innovation-prize-challenges/past-prize-challenges/2018-differential-privacy-synthetic'>NIST Differential Privacy
+                                                                                         
+                                                                                         
+     Synthetic Data challenge</a><span class='footnote-mark'><a href='main12.html#fn11x0'><sup class='textsuperscript'>11</sup></a></span><a id='x1-11005f11'></a> .
+     It generates synthetic data by perturbing the marginals that capture the data distribution through
+     the Gaussian mechanism and by post-processing them through the <span class='ectt-1000'>Private-PGM </span>algorithm [<a id='x1-11006'></a> <a href='#cite.0@privatepgm19'>10</a>]. The
+     base marginals can be obtained by one of the three following methods: given by a domain expert,
+     computed  from  a  public  dataset  that  follows  a  data  distribution  similar  to  the  private  dataset’s
+     distribution or computed from the private dataset while satisfying differential privacy. Afterwards,
+     <span class='ectt-1000'>Private-PGM </span>takes as input the perturbed marginals and computes a data distribution that would
+     have produced close marginals. More precisely, it represents the problem as an optimization problem,
+     the distribution searched as a graphical model, and thus solves the problem of finding the optimal
+     graphical model. Synthetic data can then be generated based on the model found. The <span class='ectt-1000'>MST </span>algorithm
+     has been demonstrated to satisfy <span class='cmr-10'>(</span><span class='cmmi-10'>𝜖,δ</span><span class='cmr-10'>)</span>-differential privacy.
+     </p></dd><dt class='description'>
+     <!-- l. 172 --><p class='noindent'>
+<span class='ecbx-1000'>The </span><span class='ectt-1000'>PATE-GAN </span><span class='ecbx-1000'>algorithm [</span><a id='x1-11007'></a> <a href='#cite.0@Jordon2019PATEGANGS'><span class='ecbx-1000'>7</span></a><span class='ecbx-1000'>]</span> </p></dt><dd class='description'>
+     <!-- l. 172 --><p class='noindent'> is an extension of <span class='ecti-1000'>generative adversarial networks</span> [<a id='x1-11008'></a> <a href='#cite.0@goodfellow2014generative'>4</a>] (GAN) based on the <span class='ecti-1000'>private aggregation of
+     </span><span class='ecti-1000'>teacher ensembles </span>framework [<a id='x1-11009'></a> <a href='#cite.0@Papernot2016SemisupervisedKT'>12</a>] (PATE). Each <span class='ectt-1000'>PATE-GAN </span>iteration consists in three phases. First,
+     <span class='ectt-1000'>PATE-GAN </span>trains  <span class='cmmi-10'>k </span>classifiers  (called  teachers)  for  distinguishing  private  real  data  from  generated
+     synthetic data. Each teacher is fed with samples from the real dataset (one partition per teacher) and
+     from a generator (uniform distribution at first) and learns to distinguish between the two. Second,
+     <span class='ectt-1000'>PATE-GAN </span>builds on the <span class='cmmi-10'>k </span>teachers for training the student (a binary classifier as well) and the generator
+     in an adversarial manner. The generator produces a set of samples but the teachers are now used for
+     voting, for each sample, whether it is realistic or fake. The number of votes for each label (realistic
+     or fake) is perturbed by the Laplace mechanism and the final label of a sample is the majority label.
+     The student learns to distinguish between real and fake samples based on the resulting dataset. Third,
+     the generator outputs a final set of samples and is penalized according to the success of the student
+     in distinguishing realistic samples from fake samples. <span class='ectt-1000'>PATE-GAN </span>iterates until the privacy budget is
+     exhausted. This method has been shown to satisfy <span class='cmr-10'>(</span><span class='cmmi-10'>𝜖,δ</span><span class='cmr-10'>)</span>-differential privacy.</p></dd></dl>
+<!-- l. 198 --><p class='noindent'><span class='paragraphHead'><a id='x1-12000'></a><span class='ecbx-1000'>Success measure.</span></span>
+   The success of a team is computed by first measuring the successes of its attack on each parameterized
+algorithm attacked (<span class='ecti-1000'>e.g.</span>, <span class='ectt-1000'>MST </span>parameterized by (<span class='cmmi-10'>𝜖 </span><span class='cmr-10'>= 1</span><span class='cmmi-10'>.</span><span class='cmr-10'>0</span>, <span class='cmmi-10'>δ </span><span class='cmr-10'>= 10</span><sup><span class='cmsy-7'>−</span><span class='cmr-7'>5</span></sup>)) and second by aggregating the
+success measures in a single final score. More precisely, the success of a given attack for a given triple is
+evaluated based on the well-known <span class='ecti-1000'>membership advantage measure</span> [<a id='x1-12001'></a> <a href='#cite.0@yeom2018'>15</a>] (see Definition <a href='#x1-12000doc'>3.2.0.0<!-- tex4ht:ref: def:membadv  --></a> ).
+Membership advantage is computed for each attack through the execution of a <span class='ecti-1000'>membership experiment </span>(see
+Experiment <a href='#x1-12000doc'>3.2.0.0<!-- tex4ht:ref: exp:membexp  --></a> ). A single membership experiment requires to estimate the success probabilities of the
+attack and consequently to run the same attack <span class='cmmi-10'>r </span>times. The parameter <span class='cmmi-10'>r </span>must be at the same time
+large enough for obtaining a sufficiently stable estimation and small enough for being practical (<span class='ecti-1000'>e.g.</span>,
+<span class='cmmi-10'>r </span><span class='cmr-10'>= 100</span>).
+</p>
+   <div class='newtheorem'>
+<!-- l. 205 --><p class='noindent'><span class='head'>
+<span class='ecbx-1000'>Experiment </span>(Membership experiment <span class='ecss-1000'>Exp</span><sup><span class='ecss-1000'>M</span></sup><span class='cmr-10'>(</span><span class='cmsy-10'>𝒜</span><span class='cmmi-10'>,A,n,</span><span class='cmsy-10'>𝒟</span><span class='cmr-10'>)</span>, from [<a href='#cite.0@yeom2018'>15</a>])<span class='ecbx-1000'>.</span>  </span><a id='x1-12000doc'></a> <span class='ecti-1000'>Let </span><span class='cmsy-10'>𝒜 </span><span class='ecti-1000'>be an adversary, </span><span class='cmmi-10'>A </span><span class='ecti-1000'>be a learning
+</span><span class='ecti-1000'>algorithm, </span><span class='cmmi-10'>n </span><span class='ecti-1000'>be a positive integer, and </span><span class='cmsy-10'>𝒟 </span><span class='ecti-1000'>be a distribution over data points </span><span class='cmr-10'>(</span><span class='cmmi-10'>x,y</span><span class='cmr-10'>)</span><span class='ecti-1000'>. The </span>membership experiment
+<span class='ecti-1000'>proceeds as follows:</span>
+     </p><dl class='enumerate-enumitem'><dt class='enumerate-enumitem'>
+  <span class='ecti-1000'>1.</span> </dt><dd class='enumerate-enumitem'><span class='ecti-1000'>Sample </span><span class='cmmi-10'>S </span><span class='cmsy-10'>∼𝒟</span><sup><span class='cmmi-7'>n</span></sup><span class='ecti-1000'>, and let </span><span class='cmmi-10'>A</span><sub><span class='cmmi-7'>S</span></sub> <span class='cmr-10'>= </span><span class='cmmi-10'>A</span><span class='cmr-10'>(</span><span class='cmmi-10'>S</span><span class='cmr-10'>)</span><span class='ecti-1000'>.</span>
+                                                                                         
+                                                                                         
+     </dd><dt class='enumerate-enumitem'>
+  <span class='ecti-1000'>2.</span> </dt><dd class='enumerate-enumitem'><span class='ecti-1000'>Choose </span><span class='cmmi-10'>b </span><span class='cmsy-10'>←{</span><span class='cmr-10'>0</span><span class='cmmi-10'>,</span><span class='cmr-10'>1</span><span class='cmsy-10'>} </span><span class='ecti-1000'>uniformly at random.</span>
+     </dd><dt class='enumerate-enumitem'>
+  <span class='ecti-1000'>3.</span> </dt><dd class='enumerate-enumitem'><span class='ecti-1000'>Draw </span><span class='cmmi-10'>z </span><span class='cmsy-10'>∼ </span><span class='cmmi-10'>S </span><span class='ecti-1000'>if </span><span class='cmmi-10'>b </span><span class='cmr-10'>= 0</span><span class='ecti-1000'>, or </span><span class='cmmi-10'>z </span><span class='cmsy-10'>∼𝒟 </span><span class='ecti-1000'>if </span><span class='cmmi-10'>b </span><span class='cmr-10'>= 1</span>
+     </dd><dt class='enumerate-enumitem'>
+  <span class='ecti-1000'>4.</span> </dt><dd class='enumerate-enumitem'><span class='ecss-1000'>Exp</span><sup><span class='ecss-1000'>M</span></sup><span class='cmr-10'>(</span><span class='cmsy-10'>𝒜</span><span class='cmmi-10'>,A,n,</span><span class='cmsy-10'>𝒟</span><span class='cmr-10'>) </span><span class='ecti-1000'>is 1 if </span><span class='cmsy-10'>𝒜</span><span class='cmr-10'>(</span><span class='cmmi-10'>z,A</span><sub><span class='cmmi-7'>S</span></sub><span class='cmmi-10'>,n,</span><span class='cmsy-10'>𝒟</span><span class='cmr-10'>) = </span><span class='cmmi-10'>b </span><span class='ecti-1000'>and 0 otherwise. </span><span class='cmsy-10'>𝒜 </span><span class='ecti-1000'>must output either 0 or 1.</span></dd></dl>
+   </div>
+<!-- l. 218 --><p class='indent'>
+</p>
+   <div class='newtheorem'>
+<!-- l. 220 --><p class='noindent'><span class='head'>
+<span class='ecbx-1000'>Definition </span>(Membership advantage, from [<a id='x1-12006'></a> <a href='#cite.0@yeom2018'>15</a>])<span class='ecbx-1000'>.</span>  </span> <span class='ecti-1000'>The </span>membership advantage <span class='ecti-1000'>of </span><span class='cmsy-10'>𝒜 </span><span class='ecti-1000'>is defined as</span>
+</p>
+   <table class='equation-star'><tr><td>
+   <div class='math-display'>
+<img alt='   M                    M
+Adv  (𝒜, A,n,𝒟 ) = 2 Pr[Exp (𝒜, A,n,𝒟) = 1]− 1,
+' class='math-display' src='main0x.png' /></div>
+   </td></tr></table>
+<!-- l. 226 --><p class='nopar'><span class='ecti-1000'>in which the probabilities are taken over the coin flips of </span><span class='cmsy-10'>𝒜</span><span class='ecti-1000'>, the random choices of </span><span class='cmmi-10'>S </span><span class='ecti-1000'>and </span><span class='cmmi-10'>b</span><span class='ecti-1000'>, and the random data
+</span><span class='ecti-1000'>point </span><span class='cmmi-10'>z </span><span class='cmsy-10'>∼ </span><span class='cmmi-10'>S </span><span class='ecti-1000'>or </span><span class='cmmi-10'>z  </span><span class='cmsy-10'>∼𝒟</span><span class='ecti-1000'>.</span>
+</p><!-- l. 231 --><p class='indent'>   <span class='ecti-1000'>Equivalently, the right-hand side can be expressed as the difference between </span><span class='cmsy-10'>𝒜</span><span class='ecti-1000'>’s true and false positive
+</span><span class='ecti-1000'>rates:</span>
+</p>
+   <table class='equation-star'><tr><td>
+   <div class='math-display'>
+<img alt='AdvM(𝒜,A, n,𝒟) = Pr[𝒜 = 0|b = 0]− Pr[𝒜 = 0|b = 1].
+' class='math-display' src='main1x.png' /></div>
+   </td></tr></table>
+<!-- l. 235 --><p class='nopar'>
+                                                                                         
+                                                                                         
+</p>
+   </div>
+<!-- l. 236 --><p class='indent'>
+</p><!-- l. 238 --><p class='indent'>   At the end of each track, each team obtains a set of success measures, one per parameterized algorithm attacked.
+Teams cannot be ranked through a direct comparison of their success measures because two success
+measures are comparable only if they were obtained on the same parameterized algorithm. As a result, we
+count for each team the number of times its success measure is higher than the success measures of all
+the other teams’ on the same algorithm and the same privacy parameters, and we rank the teams
+accordingly.
+</p><!-- l. 242 --><p class='noindent'>
+</p>
+   <h4 class='subsectionHead'><span class='titlemark'>3.3   </span> <a id='x1-130003.3'></a>Track 2 (Synchronous)</h4>
+<!-- l. 243 --><p class='noindent'>The 3 days synchronous track (Track 2) will allow participants to leverage on the attack developed during Track 1
+by requesting them to adapt their attack algorithm to a slight variation of the membership inference
+experiment proposed during Track 1. The exact content of Track 2 will be disclosed when the track will
+start.
+</p><!-- l. 247 --><p class='noindent'>
+</p>
+   <h4 class='subsectionHead'><span class='titlemark'>3.4   </span> <a id='x1-140003.4'></a>Technical environment</h4>
+<!-- l. 249 --><p class='noindent'><span class='paragraphHead'><a id='x1-15000'></a><span class='ecbx-1000'>Execution environment.</span></span>
+   The design, coding, and executions of attacks are performed locally by each team with its own resources. As a
+result, there is no restriction on the computing environment used to develop the attacks and the choice of the
+programming language and the available resources are unconstrained. Note however that we use and provide the
+Python environment used to prepare the tasks. To compute the success measures, we request from each team a
+probability vector per membership experiment (<span class='ecti-1000'>i.e.</span>, its guesses). The success measures of the teams are computed
+based on the probability vectors received.
+</p>
+<!-- l. 257 --><p class='noindent'><span class='paragraphHead'><a id='x1-16000'></a><span class='ecbx-1000'>Competitor’s kit and submissions.</span></span>
+   Prior to the competition, a competitor’s kit is made available for each team. The kit contains all
+the necessary resources for each team (<span class='ecti-1000'>e.g.</span>, the data schema, the base dataset, the private datasets,
+the targets, scripts for computing the success measure and the final score). We use the <a href='https://www.codabench.org/'>CodaBench
+platform</a><span class='footnote-mark'><a href='main13.html#fn12x0'><sup class='textsuperscript'>12</sup></a></span><a id='x1-16001f12'></a> 
+for hosting the kits, receiving the teams’ submissions, and ranking them. Public data [<a id='x1-16002'></a> <a href='#cite.0@beziaud_louis_2023_7858326'>1</a>] is available in a <a href='https://github.com/snake-challenge/snake-cps'>dedicated
+repository</a><span class='footnote-mark'><a href='main14.html#fn13x0'><sup class='textsuperscript'>13</sup></a></span><a id='x1-16003f13'></a> .
+All teams are required to have an account on CodaBench for participating to <span class='eccc1000-'><span class='small-caps'>Snake</span></span> <sub><span class='cmr-7'>1</span></sub>.
+                                                                                         
+                                                                                         
+</p>
+<!-- l. 264 --><p class='noindent'><span class='paragraphHead'><a id='x1-17000'></a><span class='ecbx-1000'>Communications between organizers and competitors.</span></span>
+   The official <a href='https://snake-challenge.github.io/'>web site</a><span class='footnote-mark'><a href='main15.html#fn14x0'><sup class='textsuperscript'>14</sup></a></span><a id='x1-17001f14'></a> 
+hosts the call for participation, the registration form, the news and the final outcomes of the competition. Besides
+this website, dedicated mailing-lists or other communication channels might be proposed to participants
+(<span class='ecti-1000'>e.g.</span>, forums or chats).
+</p>
+<!-- l. 269 --><p class='noindent'><span class='paragraphHead'><a id='x1-18000'></a><span class='ecbx-1000'>Reproducibility.</span></span>
+   The random seed used to sample data (train and targets) is saved for future reproducibility. The
+code used to build the whole challenge (tasks and CodaBench bundle) is available in the <a href='https://github.com/snake-challenge/snake1'>snake1
+repository</a><span class='footnote-mark'><a href='main16.html#fn15x0'><sup class='textsuperscript'>15</sup></a></span><a id='x1-18001f15'></a> .
+</p>
+<!-- l. 272 --><p class='noindent'><span class='paragraphHead'><a id='x1-19000'></a><span class='ecbx-1000'>Verifiability.</span></span>
+   Each task is distributed along with a hash of all its files (public and private). Once private data is shared (after
+the competition), this allows participants to verify that their submission was evaluated against the correct
+data.
+</p>
+   <h3 class='sectionHead'><span class='titlemark'>4   </span> <a id='x1-200004'></a>Overview of related challenges</h3>
+<!-- l. 3 --><p class='noindent'>The closest related challenges to ours are the <span class='ecti-1000'>Hide &amp; Seek privacy challenge</span> [<a id='x1-20001'></a> <a href='#cite.0@haspc2021'>8</a>] from the Van Der Schaar laboratory, the
+<span class='ecti-1000'>INSAnonym competition</span> [<a id='x1-20002'></a> <a href='#cite.0@boutet:hal-02512677'>2</a>], the <span class='ecti-1000'>PWSCup</span> [<a id='x1-20003'></a> <a href='#cite.0@pwscup2021'>11</a>] series of competitions, as well as the <a href='https://github.com/microsoft/MICO'>Microsoft Membership Inference Competition
+(MICO)</a><span class='footnote-mark'><a href='main17.html#fn16x0'><sup class='textsuperscript'>16</sup></a></span><a id='x1-20004f16'></a> .
+The three former challenges differ on the rules, the data, and the tasks they propose, but they follow the same
+two-phase structure: a sanitization phase during which the participants implement a sanitization algorithm and
+execute it on the given dataset and an attack phase during which the sanitization algorithms are attacked. The
+attack phase of these competitions is often short (either by design or in practice) and the algorithms attacked are
+chosen by the participants. The recent MICO Competition focuses on membership inference however it considers
+classification models. The <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges aim at strengthening the attack phase. First, the sanitization
+algorithms attacked are chosen from the literature and/or from the latest sanitization challenges (<span class='ecti-1000'>e.g.</span>, the
+NIST differential privacy challenges). Second, the number of algorithms under attack proposed to
+participants can be chosen in order to remain small (notion of track). This helps participants to focus on
+their attack algorithm and contributes to a better coverage of the sanitization algorithms. Third, the
+participants can be given a large amount of time to design and implement their attack algorithms.
+Fourth, by focusing on the attacks and controlling precisely the algorithms being attacked, the <span class='eccc1000-'><span class='small-caps'>Snake</span></span>
+challenge gives the opportunity to stress-test state-of-the-art sanitization algorithms systematically
+(<span class='ecti-1000'>e.g.</span>, privacy parameters). In particular, we believe that the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges complement nicely the
+other challenges dedicated to designing sanitization algorithms (<span class='ecti-1000'>e.g.</span>, the NIST differential privacy
+challenges).
+                                                                                         
+                                                                                         
+</p>
+   <h3 class='sectionHead'><span class='titlemark'>5   </span> <a id='x1-210005'></a>Conclusion</h3>
+<!-- l. 3 --><p class='noindent'>We propose the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges, a series of contests designed for stress-testing sanitization algorithms. The
+general structure of the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges is designed to concentrate the workforce of the participants on attacking a
+few selected algorithms from the state-of-the-art. Thus, we believe that it complements nicely the
+current sanitization competitions that mostly focus on the defense part. The first edition, held jointly
+with APVP’23, will focus on membership inference attacks over differentially-private synthetic data
+generation algorithms, a timely topic. All outcomes (code, algorithms, success measures) will be made
+public following open-source principles. Overall, we hope that the <span class='eccc1000-'><span class='small-caps'>Snake</span> </span>challenges can help gain
+understanding of the empirical privacy guarantees of sanitization algorithms and of their parameters
+and pave the way to a greater democratization of sanitization algorithms providing strong privacy
+guarantees.
+</p><!-- l. 90 --><p class='noindent'>
+</p>
+   <h3 class='likesectionHead'><a id='x1-22000'></a>Acknowledgments</h3>
+<!-- l. 91 --><p class='noindent'>We would like to warmly thanks the students, engineers and researchers that have helped us to design the <span class='eccc1000-'><span class='small-caps'>Snake</span></span>
+challenge: Nampoina Andriamilanto, Thomas Guyet, Pascale Jade-Vallot, Antoine Laurent, Matthieu Simonin and
+Margaux Tela.
+</p><!-- l. 93 --><p class='noindent'>
+</p>
+   <h3 class='sectionHead'><a id='x1-23000'></a>References</h3>
+<!-- l. 93 --><p class='noindent'>
+     </p><dl class='thebibliography'><dt class='thebibliography' id='X0-beziaud_louis_2023_7858326'>
+ [1]  </dt><dd class='thebibliography' id='bib-1'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@beziaud_louis_2023_7858326'></a>Louis Béziaud. <span class='ecti-1000'>SNAKE CPS</span>. Version 1.2.0. Zenodo, Apr. 2023. <span class='eccc1000-'><span class='small-caps'>doi</span></span>: <a href='https://doi.org/10.5281/zenodo.7858326'><span class='ectt-1000'>10.5281/zenodo.7858326</span></a>.
+     <span class='eccc1000-'><span class='small-caps'>url</span></span>:     <a class='url' href='https://doi.org/10.5281/zenodo.7858326'><span class='ectt-1000'>https://doi.org/10.5281/zenodo.7858326</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-boutet:hal-02512677'>
+ [2]  </dt><dd class='thebibliography' id='bib-2'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@boutet:hal-02512677'></a>Antoine Boutet et al. “DARC : Data Anonymization and Re-identification Challenge”. In: <span class='ecti-1000'>RESSI 2020
+     </span><span class='ecti-1000'>- Rendez-vous de la Recherche et de l’Enseignement de la Sécurité </span><span class='ecti-1000'>des Systèmes d’Information</span>.
+     2020. <span class='eccc1000-'><span class='small-caps'>url</span></span>:     <a class='url' href='https://hal.inria.fr/hal-02512677'><span class='ectt-1000'>https://hal.inria.fr/hal-02512677</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-Dwork2014TheAF'>
+ [3]  </dt><dd class='thebibliography' id='bib-3'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@Dwork2014TheAF'></a>Cynthia Dwork and Aaron Roth. “The Algorithmic Foundations of Differential Privacy”. In: <span class='ecti-1000'>Found.
+     </span><span class='ecti-1000'>Trends Theor. Comput. Sci. </span>9 (2014), pp. 211–407.
+     </p></dd><dt class='thebibliography' id='X0-goodfellow2014generative'>
+ [4]  </dt><dd class='thebibliography' id='bib-4'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@goodfellow2014generative'></a>Ian J. Goodfellow et al. <span class='ecti-1000'>Generative Adversarial Networks</span>. 2014. arXiv: <a href='https://arxiv.org/abs/1406.2661'><span class='ectt-1000'>1406.2661 [stat.ML]</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-Hu2021MembershipIA'>
+ [5]  </dt><dd class='thebibliography' id='bib-5'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@Hu2021MembershipIA'></a>Hongsheng  Hu  et  al.  “Membership  Inference  Attacks  on  Machine  Learning:  A  Survey”.  In:  <span class='ecti-1000'>ACM
+     </span><span class='ecti-1000'>Computing Surveys (CSUR) </span>54 (2021), pp. 1–37.
+     </p></dd><dt class='thebibliography' id='X0-epi_microdata'>
+ [6]  </dt><dd class='thebibliography' id='bib-6'>
+                                                                                         
+                                                                                         
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@epi_microdata'></a>Economic   Policy   Institute.   <span class='ecti-1000'>Current  Population  Survey  Extracts</span>.   Version 1.0.39.   2023.   <span class='eccc1000-'><span class='small-caps'>url</span></span>:
+     <a class='url' href='https://microdata.epi.org/'><span class='ectt-1000'>https://microdata.epi.org/</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-Jordon2019PATEGANGS'>
+ [7]  </dt><dd class='thebibliography' id='bib-7'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@Jordon2019PATEGANGS'></a>James Jordon, Jinsung Yoon, and Mihaela van der Schaar. “PATE-GAN: Generating Synthetic Data
+     with Differential Privacy Guarantees”. In: <span class='ecti-1000'>ICLR</span>. 2019.
+     </p></dd><dt class='thebibliography' id='X0-haspc2021'>
+ [8]  </dt><dd class='thebibliography' id='bib-8'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@haspc2021'></a>James  Jordon  et  al.  “Hide-and-Seek  Privacy  Challenge:  Synthetic  Data  Generation  vs.  Patient
+     Re-identification”.  In:  <span class='ecti-1000'>Proceedings  of  the  NeurIPS  2020  Competition  and  Demonstration  Track</span>.
+     Vol. 133. Proceedings of Machine Learning Research. PMLR, 2021, pp. 206–215.
+     </p></dd><dt class='thebibliography' id='X0-mckenna_winning_2021'>
+ [9]  </dt><dd class='thebibliography' id='bib-9'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@mckenna_winning_2021'></a>Ryan McKenna, Gerome Miklau, and Daniel Sheldon. “Winning the NIST Contest: A scalable and
+     general approach to differentially private synthetic data”. In: <span class='ecti-1000'>CoRR </span>(2021).
+     </p></dd><dt class='thebibliography' id='X0-privatepgm19'>
+[10]  </dt><dd class='thebibliography' id='bib-10'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@privatepgm19'></a>Ryan McKenna, Daniel Sheldon, and Gerome Miklau. “Graphical-model based estimation and inference
+     for differential privacy”. In: <span class='ecti-1000'>Proceedings of the 36th International Conference on Machine Learning,
+     </span><span class='ecti-1000'>ICML 2019</span>. Vol. 97. Proceedings of Machine Learning Research. PMLR, 2019, pp. 4435–4444.
+     </p></dd><dt class='thebibliography' id='X0-pwscup2021'>
+[11]  </dt><dd class='thebibliography' id='bib-11'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@pwscup2021'></a>Takao Murakami et al. “Designing a Location Trace Anonymization Contest”. In: <span class='ecti-1000'>CoRR </span>(2021).
+     </p></dd><dt class='thebibliography' id='X0-Papernot2016SemisupervisedKT'>
+[12]  </dt><dd class='thebibliography' id='bib-12'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@Papernot2016SemisupervisedKT'></a>Nicolas Papernot et al. “Semi-supervised Knowledge Transfer for Deep Learning from Private Training
+     Data”. In: <span class='ecti-1000'>ArXiv </span>abs/1610.05755 (2016).
+     </p></dd><dt class='thebibliography' id='X0-ridgeway2021'>
+[13]  </dt><dd class='thebibliography' id='bib-13'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@ridgeway2021'></a>Diane  Ridgeway  et  al.  <span class='ecti-1000'>Challenge Design and Lessons Learned from the 2018 Differential Privacy
+     </span><span class='ecti-1000'>Challenges</span>. NIST Technical Note 2151. National Institute of Standards and Technology, Apr. 2021.
+     <span class='eccc1000-'><span class='small-caps'>doi</span></span>: <a href='https://doi.org/10.6028/NIST.TN.2151'><span class='ectt-1000'>10.6028/NIST.TN.2151</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-Stadler2020SyntheticD'>
+[14]  </dt><dd class='thebibliography' id='bib-14'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@Stadler2020SyntheticD'></a>Theresa  Stadler,  Bristena  Oprisanu,  and  Carmela  Troncoso.  “Synthetic  Data  -  Anonymisation
+     Groundhog Day”. In: <span class='ecti-1000'>USENIX Security Symposium</span>. 2020.
+     </p></dd><dt class='thebibliography' id='X0-yeom2018'>
+[15]  </dt><dd class='thebibliography' id='bib-15'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@yeom2018'></a>Samuel Yeom et al. “Privacy Risk in Machine Learning: Analyzing the Connection to Overfitting”.
+     In: <span class='ecti-1000'>The 31st IEEE Computer Security Foundations Symposium</span>. CSF. Oxford, UK, July 2018. <span class='eccc1000-'><span class='small-caps'>doi</span></span>: <a href='https://doi.org/10.1109/CSF.2018.00027'><span class='ectt-1000'>10.1109/CSF.2018.00027</span></a>.
+     </p></dd><dt class='thebibliography' id='X0-privbayes'>
+[16]  </dt><dd class='thebibliography' id='bib-16'>
+     <!-- l. 93 --><p class='noindent'><a id='cite.0@privbayes'></a>Jun Zhang et al. “PrivBayes: Private Data Release via Bayesian Networks”. In: <span class='ecti-1000'>Proceedings of the
+     </span><span class='ecti-1000'>2014 ACM SIGMOD International Conference on Management of Data</span>. SIGMOD’14. 2014. <span class='eccc1000-'><span class='small-caps'>doi</span></span>: <a href='https://doi.org/10.1145/2588555.2588573'><span class='ectt-1000'>10.1145/2588555.2588573</span></a>.</p></dd></dl>
+    
+</body> 
+</html>
